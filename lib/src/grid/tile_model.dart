@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import '../executor/executor.dart';
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
-import '../options.dart';
 import '../profiler.dart';
 import '../stream/tile_supplier.dart';
 import '../tile_identity.dart';
@@ -18,7 +17,6 @@ class VectorTileModel extends ChangeNotifier {
   bool _disposed = false;
   bool get disposed => _disposed;
 
-  final RenderMode renderMode;
   final TileIdentity tile;
   final TileSupplier tileSupplier;
   final Theme theme;
@@ -31,14 +29,11 @@ class VectorTileModel extends ChangeNotifier {
   double lastRenderedZoomScale = double.negativeInfinity;
   late final TileTranslation defaultTranslation;
   TileTranslation? translation;
-  TileTranslation? imageTranslation;
   Tileset? tileset;
-  ui.Image? image;
   late final TimelineTask _firstRenderedTask;
   bool _firstRendered = false;
 
   VectorTileModel(
-      this.renderMode,
       this.tileSupplier,
       this.theme,
       this.symbolTheme,
@@ -52,7 +47,7 @@ class VectorTileModel extends ChangeNotifier {
     _firstRenderedTask = tileRenderingTask(tile);
   }
 
-  bool get hasData => image != null || tileset != null;
+  bool get hasData => tileset != null;
 
   void rendered() {
     if (!_firstRendered) {
@@ -62,14 +57,8 @@ class VectorTileModel extends ChangeNotifier {
   }
 
   void startLoading() async {
-    final request = TileRequest(
-        tileId: tile.normalize(),
-        primaryFormat: renderMode == RenderMode.raster
-            ? TileFormat.raster
-            : TileFormat.vector,
-        secondaryFormat:
-            renderMode == RenderMode.mixed ? TileFormat.raster : null,
-        cancelled: () => _disposed);
+    final request =
+        TileRequest(tileId: tile.normalize(), cancelled: () => _disposed);
     final futures = tileSupplier.stream(request);
     for (final future in futures) {
       future.whenComplete(() => _tileReady(future));
@@ -87,29 +76,9 @@ class VectorTileModel extends ChangeNotifier {
   void _receiveTile(TileResponse received) {
     final newTranslation = SlippyMapTranslator(tileSupplier.maximumZoom)
         .specificZoomTranslation(tile, zoom: received.identity.z);
-    if (received.format == TileFormat.raster) {
-      if (_disposed) {
-        received.image?.dispose();
-      } else {
-        var hadImage = image != null;
-        image?.dispose();
-        image = received.image;
-        imageTranslation = newTranslation;
-        if (hadImage && renderMode != RenderMode.raster) {
-          Future.delayed(Duration(milliseconds: 300)).then((value) {
-            if (tileset == null && imageTranslation == newTranslation) {
-              notifyListeners();
-            }
-          });
-        } else if (tileset == null) {
-          notifyListeners();
-        }
-      }
-    } else {
-      tileset = received.tileset;
-      translation = newTranslation;
-      notifyListeners();
-    }
+    tileset = received.tileset;
+    translation = newTranslation;
+    notifyListeners();
   }
 
   bool updateRendering() {
@@ -143,8 +112,6 @@ class VectorTileModel extends ChangeNotifier {
   void dispose() {
     if (!_disposed) {
       super.dispose();
-      image?.dispose();
-      image = null;
       _disposed = true;
 
       if (!_firstRendered) {

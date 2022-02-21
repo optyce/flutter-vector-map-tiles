@@ -43,8 +43,7 @@ class GridTileSizer {
   late final double effectiveScale;
   late final Offset translationDelta;
 
-  GridTileSizer(TileTranslation translation, double scale, Size size,
-      bool renderImage, ui.Image? image) {
+  GridTileSizer(TileTranslation translation, double scale, Size size) {
     var translationDelta = Offset.zero;
     var effectiveScale = scale;
     if (translation.isTranslated) {
@@ -53,13 +52,8 @@ class GridTileSizer {
       translationDelta = Offset(dx, dy);
       effectiveScale = effectiveScale * translation.fraction.toDouble();
     }
-    if (renderImage) {
-      effectiveScale = effectiveScale * (_tileSize / image!.height.toDouble());
-    }
     if (effectiveScale != 1.0) {
-      final referenceDimension =
-          (renderImage ? image!.height.toDouble() : _tileSize) /
-              translation.fraction;
+      final referenceDimension = _tileSize / translation.fraction;
       final scaledSize = effectiveScale * referenceDimension;
       final maxDimension = max(size.width, size.height);
       if (scaledSize < maxDimension) {

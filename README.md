@@ -4,8 +4,6 @@ A plugin for [`flutter_map`](https://pub.dev/packages/flutter_map) that enables 
 
 Loads vector tiles from a source such as Mapbox or Stadia Maps, and renders them as a layer on a `flutter_map`.
 
-Tile rendering can be vector, mixed, or raster. Mixed mode is default, since that provides an optimal trade-off between sharp visuals when idle, and smooth animation when zooming with a pinch gesture.
-
 <img src="https://raw.githubusercontent.com/greensopinion/flutter-vector-map-tiles/main/vector_map_tiles-example.png" alt="example screenshot" width="292"/> <img src="https://raw.githubusercontent.com/greensopinion/flutter-vector-map-tiles/main/vector_map_tiles-example-hillshade.png" alt="example screenshot" width="292"/>
 
 ## Installing
@@ -193,7 +191,6 @@ A vector tile hillshade layer can be added to your maps by following these steps
   VectorTileLayerOptions(
     theme: _mapTheme(),
     backgroundTheme: _backgroundTheme(),
-    renderMode: RenderMode.vector,
     tileProviders: TileProviders({
       'openmaptiles': _cachingTileProvider(_urlTemplate()),
       'hillshade': _cachingTileProvider(_hillshadeUrlTemplate())

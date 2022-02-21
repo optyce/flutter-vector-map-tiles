@@ -25,19 +25,9 @@ class ProviderTileSupplier extends TileSupplier {
 
     // start retrieval right away for the tile that we want
     final futures = [
-      _provider.provide(TileProviderRequest(
-          tileId: tileId,
-          format: request.primaryFormat,
-          cancelled: request.cancelled))
+      _provider.provide(
+          TileProviderRequest(tileId: tileId, cancelled: request.cancelled))
     ];
-    final secondaryFormat = request.secondaryFormat;
-    if (secondaryFormat != null) {
-      futures.add(_provider.provide(TileProviderRequest(
-          tileId: tileId,
-          format: secondaryFormat,
-          cancelled: request.cancelled,
-          zoom: request.tileId.z.toDouble())));
-    }
     return futures;
   }
 }

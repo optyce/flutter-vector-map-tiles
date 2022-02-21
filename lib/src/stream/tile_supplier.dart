@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:vector_tile_renderer/vector_tile_renderer.dart';
 
 import '../../vector_map_tiles.dart';
 import '../executor/executor.dart';
-
-enum TileFormat { vector, raster }
 
 abstract class CancellableTileRequest {
   final TileIdentity tileId;
@@ -25,25 +22,16 @@ abstract class CancellableTileRequest {
 }
 
 class TileRequest extends CancellableTileRequest {
-  final TileFormat primaryFormat;
-  final TileFormat? secondaryFormat;
-
   TileRequest(
-      {required TileIdentity tileId,
-      required this.primaryFormat,
-      this.secondaryFormat,
-      required CancellationCallback cancelled})
+      {required TileIdentity tileId, required CancellationCallback cancelled})
       : super(tileId, cancelled);
 }
 
 class TileResponse {
   final TileIdentity identity;
-  final TileFormat format;
   final Tileset? tileset;
-  final Image? image;
 
-  TileResponse(
-      {required this.identity, required this.format, this.tileset, this.image});
+  TileResponse({required this.identity, this.tileset});
 }
 
 abstract class TileSupplier {
@@ -52,12 +40,10 @@ abstract class TileSupplier {
 }
 
 class TileProviderRequest extends CancellableTileRequest {
-  final TileFormat format;
   final double? zoom;
 
   TileProviderRequest(
       {required TileIdentity tileId,
-      required this.format,
       this.zoom,
       required CancellationCallback cancelled})
       : super(tileId, cancelled);

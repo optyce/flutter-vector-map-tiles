@@ -18,7 +18,6 @@ import '../tile_viewport.dart';
 import 'debounce.dart';
 import 'disposable_state.dart';
 import 'grid_tile_positioner.dart';
-import 'renderer_pipeline.dart';
 import 'tile_widgets.dart';
 
 class VectorTileCompositeLayer extends StatefulWidget {
@@ -88,20 +87,16 @@ class _VectorTileCompositeLayerState extends State<VectorTileCompositeLayer>
   Widget build(BuildContext context) {
     final options = widget.options;
     final backgroundTheme = options.backgroundTheme;
-    var theme = options.theme;
-    Theme? symbolTheme;
-    if (options.renderMode == RenderMode.vector) {
-      symbolTheme = theme.copyWith(types: {ThemeLayerType.symbol});
-      theme = theme.copyWith(types: {
-        ThemeLayerType.background,
-        ThemeLayerType.fill,
-        ThemeLayerType.line
-      });
-    }
+    final symbolTheme = options.theme.copyWith(types: {ThemeLayerType.symbol});
+    final theme = options.theme.copyWith(types: {
+      ThemeLayerType.background,
+      ThemeLayerType.fill,
+      ThemeLayerType.line
+    });
     final layers = <Widget>[
       VectorTileLayer(
           Key("${options.theme.id}_VectorTileLayer"),
-          _LayerOptions(theme, options.renderMode,
+          _LayerOptions(theme,
               symbolTheme: symbolTheme,
               showTileDebugInfo: options.showTileDebugInfo,
               paintBackground: backgroundTheme == null,
@@ -115,7 +110,7 @@ class _VectorTileCompositeLayerState extends State<VectorTileCompositeLayer>
     if (backgroundTheme != null) {
       final background = VectorTileLayer(
           Key("${backgroundTheme.id}_background_VectorTileLayer"),
-          _LayerOptions(backgroundTheme, RenderMode.vector,
+          _LayerOptions(backgroundTheme,
               showTileDebugInfo: options.showTileDebugInfo,
               paintBackground: true,
               substituteTilesWhileLoading: false,
@@ -133,11 +128,9 @@ class _VectorTileCompositeLayerState extends State<VectorTileCompositeLayer>
     _caches = Caches(
         executor: _executor,
         providers: widget.options.tileProviders,
-        pipeline: RendererPipeline(widget.options.theme,
-            scale: widget.options.rasterImageScale),
+        theme: widget.options.theme,
         ttl: widget.options.fileCacheTtl,
         memoryTileCacheMaxSize: widget.options.memoryTileCacheMaxSize,
-        maxImagesInMemory: widget.options.maxImagesInMemory,
         maxSizeInBytes: widget.options.fileCacheMaximumSizeInBytes);
     _tileSupplier = ProviderTileSupplier(DelayProvider(
             CachesTileProvider(
@@ -160,14 +153,13 @@ class _VectorTileCompositeLayerState extends State<VectorTileCompositeLayer>
 class _LayerOptions {
   final Theme theme;
   final Theme? symbolTheme;
-  final RenderMode renderMode;
   final bool showTileDebugInfo;
   final bool paintBackground;
   final bool substituteTilesWhileLoading;
   final bool paintNoDataTiles;
   final double Function() mapZoom;
 
-  _LayerOptions(this.theme, this.renderMode,
+  _LayerOptions(this.theme,
       {this.symbolTheme,
       required this.showTileDebugInfo,
       required this.paintBackground,
@@ -238,7 +230,6 @@ class _VectorTileLayerState extends DisposableState<VectorTileLayer> {
         widget.options.theme,
         widget.options.symbolTheme,
         widget.tileSupplier,
-        widget.options.renderMode,
         widget.options.substituteTilesWhileLoading,
         widget.options.paintBackground,
         widget.options.showTileDebugInfo);

@@ -21,7 +21,6 @@ class TileWidgets extends ChangeNotifier {
   final Theme _theme;
   final Theme? _symbolTheme;
   final TileSupplier _tileSupplier;
-  final RenderMode _renderMode;
   final bool paintBackground;
   final bool showTileDebugInfo;
   final bool substituteTilesWhileLoading;
@@ -32,7 +31,6 @@ class TileWidgets extends ChangeNotifier {
       this._theme,
       this._symbolTheme,
       this._tileSupplier,
-      this._renderMode,
       this.substituteTilesWhileLoading,
       this.paintBackground,
       this.showTileDebugInfo);
@@ -72,7 +70,6 @@ class TileWidgets extends ChangeNotifier {
       }
       if (model == null) {
         model = VectorTileModel(
-            _renderMode,
             _tileSupplier,
             _theme,
             _symbolTheme,
@@ -107,11 +104,6 @@ class TileWidgets extends ChangeNotifier {
     if (!_disposed) {
       super.dispose();
       _disposed = true;
-      _idToWidget.clear();
-      _idToModel.values.forEach(_removeAndDispose);
-      _idToModel.clear();
-      _loadingModels.clear();
-      _substitutionModels.clear();
     }
   }
 
@@ -198,7 +190,6 @@ class TileWidgets extends ChangeNotifier {
     _loadingModels.remove(obsolete);
     _idToModel.remove(obsolete.tile);
     _idToWidget.remove(obsolete.tile);
-    obsolete.dispose();
   }
 }
 
