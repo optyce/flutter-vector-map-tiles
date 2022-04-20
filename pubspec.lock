@@ -129,9 +129,9 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_map
-      url: "https://pub.dartlang.org"
+      url: "https://unpub.optyce.eu"
     source: hosted
-    version: "0.14.0"
+    version: "0.14.2"
   frontend_server_client:
     dependency: transitive
     description:

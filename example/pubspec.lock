@@ -94,9 +94,9 @@ packages:
     dependency: transitive
     description:
       name: flutter_map
-      url: "https://pub.dartlang.org"
+      url: "https://unpub.optyce.eu"
     source: hosted
-    version: "0.14.0"
+    version: "0.14.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -358,7 +358,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.0.1"
+    version: "1.4.5"
   vector_math:
     dependency: transitive
     description:
