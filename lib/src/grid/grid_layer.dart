@@ -23,7 +23,7 @@ import 'tile_widgets.dart';
 class VectorTileCompositeLayer extends StatefulWidget {
   final VectorTileLayerOptions options;
   final MapState mapState;
-  final Stream<Null> stream;
+  final Stream<void> stream;
 
   const VectorTileCompositeLayer(this.options, this.mapState, this.stream);
 
@@ -55,7 +55,7 @@ class _VectorTileCompositeLayerState extends State<VectorTileCompositeLayer>
     if (widget.options.logCacheStats) {
       _subscription = widget.stream.listen((event) {
         _cacheStats.update();
-      });
+      }) as StreamSubscription<Null>?;
     }
   }
 
@@ -184,7 +184,7 @@ class _LayerOptions {
 class VectorTileLayer extends StatefulWidget {
   final _LayerOptions options;
   final MapState mapState;
-  final Stream<Null> stream;
+  final Stream<void> stream;
   final TranslatingTileProvider tileProvider;
 
   const VectorTileLayer(
@@ -198,7 +198,7 @@ class VectorTileLayer extends StatefulWidget {
 }
 
 class _VectorTileLayerState extends DisposableState<VectorTileLayer> {
-  StreamSubscription<Null>? _subscription;
+  StreamSubscription<void>? _subscription;
   late TileWidgets _tileWidgets;
   late final _ZoomScaler _zoomScaler;
 
